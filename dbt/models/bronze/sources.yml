@@ -1,0 +1,42 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: "Raw Bronze layer — one row per fetch, no transformations applied."
+    database: "{{ env_var('POSTGRES_DB', 'hybridrag_forge') }}"
+    schema: bronze
+    loaded_at_field: fetched_at
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 48, period: hour}
+
+    tables:
+      - name: github_repos
+        description: "Raw GitHub repository metadata fetched via the GraphQL API."
+        columns:
+          - name: id
+            description: "Surrogate primary key (BIGSERIAL)."
+          - name: repo_owner
+            description: "GitHub owner (organisation or user) — part of the unique key."
+          - name: repo_name
+            description: "GitHub repository name — part of the unique key."
+          - name: fetched_at
+            description: "UTC timestamp when this record was fetched. Used for freshness checks."
+          - name: raw_data
+            description: "Full GitHub GraphQL response as JSONB."
+
+      - name: opendigger_metrics
+        description: "Raw OpenDigger time-series metrics for GitHub repositories."
+        columns:
+          - name: id
+            description: "Surrogate primary key (BIGSERIAL)."
+          - name: repo_owner
+            description: "GitHub owner — part of the unique key."
+          - name: repo_name
+            description: "GitHub repository name — part of the unique key."
+          - name: metric_name
+            description: "OpenDigger metric name (e.g. openrank, stars, forks) — part of the unique key."
+          - name: fetched_at
+            description: "UTC timestamp when this record was fetched. Used for freshness checks."
+          - name: raw_data
+            description: "Raw JSON metric payload from the OpenDigger API."

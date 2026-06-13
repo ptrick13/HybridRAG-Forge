@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import extractors.github_graphql as gh
 import extractors.opendigger as od
+import loaders.postgres.load_bronze as lb
 
 CONFIG_PATH = Path(__file__).parent.parent / "extractors" / "config" / "target_repos.yaml"
 
@@ -40,6 +41,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Skip OpenDigger extraction",
     )
+    parser.add_argument(
+        "--skip-load",
+        action="store_true",
+        help="Skip loading extracted JSON files into PostgreSQL",
+    )
     return parser.parse_args()
 
 
@@ -65,6 +71,10 @@ def main() -> None:
     if not args.skip_opendigger:
         logger.info("--- OpenDigger ---")
         od.extract_all(repos)
+
+    if not args.skip_load:
+        logger.info("--- Load into PostgreSQL (bronze schema) ---")
+        lb.load_all()
 
     logger.info("Bronze extraction complete.")
 
