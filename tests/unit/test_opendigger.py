@@ -1,9 +1,7 @@
 import json
-from pathlib import Path
 from unittest.mock import MagicMock
 
 import httpx
-import pytest
 
 from extractors.opendigger import (
     BASE_URL,

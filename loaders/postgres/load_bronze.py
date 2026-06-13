@@ -34,7 +34,7 @@ _OPENDIGGER_METRICS: list[str] = [
 ]
 
 
-def get_conn() -> "PgConnection":
+def get_conn() -> PgConnection:
     return psycopg2.connect(
         host=os.getenv("POSTGRES_HOST", "localhost"),
         port=int(os.getenv("POSTGRES_PORT", "5432")),
@@ -61,7 +61,7 @@ def _parse_opendigger_stem(stem: str) -> tuple[str, str, str] | None:
 
 def load_github_repos(
     bronze_dir: Path = GITHUB_BRONZE_DIR,
-    conn: "PgConnection | None" = None,
+    conn: PgConnection | None = None,
 ) -> int:
     """Upsert all github_repos JSON files from *bronze_dir* into PostgreSQL.
 
@@ -124,7 +124,7 @@ def load_github_repos(
 
 def load_opendigger_metrics(
     bronze_dir: Path = OPENDIGGER_BRONZE_DIR,
-    conn: "PgConnection | None" = None,
+    conn: PgConnection | None = None,
 ) -> int:
     """Upsert all opendigger JSON files from *bronze_dir* into PostgreSQL.
 
