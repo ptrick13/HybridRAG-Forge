@@ -1,5 +1,9 @@
 # HybridRAG-Forge 🚧 under active development
 
+![Python](https://img.shields.io/badge/python-3.11-blue?logo=python&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green)
+[![CI](https://github.com/ptrick13/HybridRAG-Forge/actions/workflows/ci.yml/badge.svg)](https://github.com/ptrick13/HybridRAG-Forge/actions/workflows/ci.yml)
+
 An end-to-end data platform for Ecosystem Activity & Relationship Intelligence in the AI/Data tooling ecosystem.
 
 ## Project Goal & Core Use Case
@@ -99,7 +103,12 @@ docker-compose up -d
 # 4. Set up Python environment
 python3.11 -m venv .venv
 source .venv/bin/activate
+
+# Option A – editable install with all dev tools (recommended for contributors)
 pip install -e ".[dev]"
+
+# Option B – pinned dependencies (reproducible installs, quick readers)
+pip install -r requirements.txt
 ```
 
 All common commands are available via `make`:

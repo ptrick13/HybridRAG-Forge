@@ -1,0 +1,18 @@
+apache-airflow==3.2.2
+dbt-postgres==1.10.0
+psycopg2-binary==2.9.12
+neo4j==6.2.0
+qdrant-client==1.18.0
+streamlit==1.58.0
+httpx==0.28.1
+pydantic==2.13.4
+PyYAML==6.0.3
+tenacity==9.1.4
+openai==2.38.0
+python-dotenv==1.2.2
+
+# dev
+pytest==9.0.3
+pytest-asyncio==1.4.0
+ruff==0.15.17
+testcontainers==4.14.2
