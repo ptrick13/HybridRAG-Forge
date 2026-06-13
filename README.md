@@ -90,7 +90,7 @@ Full configuration lives in [extractors/config/target_repos.yaml](extractors/con
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/patrickvorreiter/HybridRAG-Forge.git
+git clone https://github.com/ptrick13/HybridRAG-Forge.git
 cd HybridRAG-Forge
 
 # 2. Configure environment variables
@@ -103,11 +103,6 @@ docker-compose up -d
 # 4. Set up Python environment
 python3.11 -m venv .venv
 source .venv/bin/activate
-
-# Option A – editable install with all dev tools (recommended for contributors)
-pip install -e ".[dev]"
-
-# Option B – pinned dependencies (reproducible installs, quick readers)
 pip install -r requirements.txt
 ```
 
@@ -129,7 +124,7 @@ make dbt-test # Run dbt tests
 | Phase | Content | Status |
 |---|---|---|
 | **1 – Scaffold** | Repo structure, Docker Compose, dbt skeleton, CI | ✅ done |
-| **2 – Bronze extractors** | GitHub GraphQL API + OpenDigger fetcher, raw data into Postgres Bronze | 🔜 |
+| **2 – Bronze extractors** | GitHub GraphQL API + OpenDigger fetcher, raw data into Postgres Bronze | ✅ done |
 | **3 – Silver/dbt** | dbt models: cleaning, normalization, dependency parsing, bot filter | 🔜 |
 | **4 – AI enrichment** | LLM-based repo summaries (one-time run), embedding generation | 🔜 |
 | **5 – Gold/Star Schema + KG** | dbt Gold models: Star Schema (Postgres), KG export (Neo4j), doc chunks (Qdrant) | 🔜 |
