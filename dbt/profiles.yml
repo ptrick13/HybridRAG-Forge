@@ -1,0 +1,16 @@
+# dbt connection profiles
+# Credentials are read from environment variables — do not commit real values here.
+# Copy this file to ~/.dbt/profiles.yml or set DBT_PROFILES_DIR=./dbt
+
+hybridrag_forge:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
+      port: "{{ env_var('POSTGRES_PORT', '5432') | int }}"
+      dbname: "{{ env_var('POSTGRES_DB', 'hybridrag_forge') }}"
+      user: "{{ env_var('POSTGRES_USER', 'forge_user') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD') }}"
+      schema: public
+      threads: 4

@@ -1,0 +1,4 @@
+streamlit>=1.35
+psycopg2-binary>=2.9
+neo4j>=5.20
+qdrant-client>=1.9

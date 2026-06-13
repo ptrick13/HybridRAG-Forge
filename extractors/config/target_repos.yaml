@@ -1,0 +1,38 @@
+target_repos:
+  llm_agent_frameworks:
+    - langchain-ai/langchain
+    - langchain-ai/langgraph
+    - run-llama/llama_index
+    - deepset-ai/haystack
+    - microsoft/autogen
+    - crewAIInc/crewAI
+
+  vector_databases:
+    - qdrant/qdrant
+    - weaviate/weaviate
+    - milvus-io/milvus
+    - chroma-core/chroma
+
+  orchestration_transformation:
+    - apache/airflow
+    - dbt-labs/dbt-core
+    - dagster-io/dagster
+    - PrefectHQ/prefect
+
+  embeddings_models:
+    - UKPLab/sentence-transformers
+    - huggingface/transformers
+
+  inference_serving:
+    - vllm-project/vllm
+    - ollama/ollama
+
+  eval_observability:
+    - explodinggradients/ragas
+    - langfuse/langfuse
+
+  graph_utilities:
+    - networkx/networkx
+    - neo4j/neo4j-python-driver
+    - pydantic/pydantic
+    - openai/tiktoken
