@@ -1,6 +1,6 @@
 # HybridRAG-Forge 🚧 under active development
 
-![Python](https://img.shields.io/badge/python-3.11-blue?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/python-3.11+-blue?logo=python&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
 [![CI](https://github.com/ptrick13/HybridRAG-Forge/actions/workflows/ci.yml/badge.svg)](https://github.com/ptrick13/HybridRAG-Forge/actions/workflows/ci.yml)
 
