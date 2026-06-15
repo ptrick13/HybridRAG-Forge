@@ -18,7 +18,14 @@ ignore = [
 [tool.ruff.lint.isort]
 known-first-party = ["extractors", "enrichment", "loaders", "dashboard"]
 
+[tool.coverage.run]
+omit = [
+    "dashboard/app.py",
+    "scripts/*",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
 pythonpath = ["."]
+addopts = "--cov=extractors --cov=loaders/postgres --cov-report=xml --cov-report=term-missing"

@@ -85,6 +85,7 @@ def load_github_repos(
     own_conn = conn is None
     if own_conn:
         conn = get_conn()
+    assert conn is not None
 
     count = 0
     try:
@@ -150,6 +151,7 @@ def load_opendigger_metrics(
     own_conn = conn is None
     if own_conn:
         conn = get_conn()
+    assert conn is not None
 
     count = 0
     try:
