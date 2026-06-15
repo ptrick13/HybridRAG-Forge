@@ -159,3 +159,9 @@ pytest -v
 | **6 – Loaders** | Postgres, Neo4j, and Qdrant loaders | 🔜 |
 | **7 – Airflow orchestration** | DAG for daily ingestion, dependency graph | 🔜 |
 | **8 – Dashboard** | Streamlit: time-series charts, graph insights, semantic search | 🔜 |
+
+---
+
+## License
+
+MIT © Patrick Vorreiter
