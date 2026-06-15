@@ -1,4 +1,4 @@
-.PHONY: up down lint test dbt-run dbt-test
+.PHONY: up down lint typecheck test dbt-run dbt-test
 
 up:
 	docker-compose up -d
@@ -9,6 +9,9 @@ down:
 lint:
 	ruff check .
 	ruff format --check .
+
+typecheck:
+	mypy extractors/ loaders/postgres/ --ignore-missing-imports
 
 test:
 	pytest tests/
