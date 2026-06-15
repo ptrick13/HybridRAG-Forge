@@ -13,10 +13,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install Ruff
-        run: pip install ruff>=0.4
-      - name: Run Ruff
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Ruff check
         run: ruff check .
+      - name: Run Ruff format check
+        run: ruff format --check .
 
   test:
     name: Tests (pytest)
@@ -26,6 +29,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run pytest

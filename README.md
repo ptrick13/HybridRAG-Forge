@@ -111,7 +111,7 @@ All common commands are available via `make`:
 ```bash
 make up       # Start Docker services
 make down     # Stop Docker services
-make lint     # Run Ruff linter
+make lint     # Run Ruff linter (ruff check .) and format check (ruff format --check .)
 make test     # Run pytest
 make dbt-run  # Run dbt models
 make dbt-test # Run dbt tests

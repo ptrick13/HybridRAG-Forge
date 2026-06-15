@@ -8,9 +8,7 @@ down:
 
 lint:
 	ruff check .
-
-format:
-	ruff format .
+	ruff format --check .
 
 test:
 	pytest tests/
