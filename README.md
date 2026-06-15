@@ -58,9 +58,6 @@ flowchart TD
 | Vector DB | Qdrant |
 | Dashboard | Streamlit |
 | Infrastructure | Docker Compose |
-| Linting | Ruff, mypy |
-| Tests | pytest |
-| CI/CD | GitHub Actions |
 | LLM/Embeddings | OpenAI-compatible API (configurable, default: low-cost model) |
 
 ---
@@ -144,7 +141,7 @@ pytest -v
 
 | Test file | What is tested |
 |---|---|
-| `tests/unit/test_github_graphql.py` | `build_request_payload()`, `_make_request()`, `fetch_repo()`, `save_repo()` — GraphQL query field validation, rate limit handling, JSON persistence
+| `tests/unit/test_github_graphql.py` | `build_request_payload()`, `_make_request()`, `fetch_repo()`, `save_repo()` — GraphQL query field validation, rate limit handling, JSON persistence |
 | `tests/unit/test_opendigger.py` | `build_metric_url()`, `fetch_metric()`, `save_metric()` — URL construction, 404 handling, request errors, file naming |
 | `tests/integration/test_bronze_load.py` | `load_github_repos()`, `load_opendigger_metrics()` — upsert correctness, idempotency, conflict resolution |
 
