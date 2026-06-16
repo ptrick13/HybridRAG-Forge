@@ -1,7 +1,8 @@
 # HybridRAG-Forge 🚧 under active development
 
 ![Python](https://img.shields.io/badge/python-3.11+-blue?logo=python&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-green)
+![License](https://img.shields.io/badge/license-MIT-blue)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![CI](https://github.com/ptrick13/HybridRAG-Forge/actions/workflows/ci.yml/badge.svg)](https://github.com/ptrick13/HybridRAG-Forge/actions/workflows/ci.yml)
 [![Codecov](https://codecov.io/gh/ptrick13/HybridRAG-Forge/branch/master/graph/badge.svg)](https://codecov.io/gh/ptrick13/HybridRAG-Forge)
 
