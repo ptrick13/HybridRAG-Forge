@@ -1,5 +1,6 @@
 import json
-from unittest.mock import MagicMock
+import os
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -8,7 +9,9 @@ from extractors.github_graphql import (
     RateLimitError,
     _make_request,
     build_request_payload,
+    extract_all,
     fetch_repo,
+    load_repos_from_yaml,
     save_repo,
 )
 
@@ -150,3 +153,91 @@ class TestSaveRepo:
         nested = tmp_path / "a" / "b"
         save_repo("x", "y", {}, bronze_dir=nested)
         assert nested.exists()
+
+
+class TestLoadReposFromYaml:
+    def test_returns_flattened_list(self, tmp_path):
+        yaml_file = tmp_path / "repos.yaml"
+        yaml_file.write_text(
+            "target_repos:\n"
+            "  vector_dbs:\n"
+            "    - qdrant/qdrant\n"
+            "    - weaviate/weaviate\n"
+            "  llm_frameworks:\n"
+            "    - langchain-ai/langchain\n"
+        )
+        result = load_repos_from_yaml(yaml_file)
+        assert result == ["qdrant/qdrant", "weaviate/weaviate", "langchain-ai/langchain"]
+
+    def test_missing_target_repos_key_returns_empty(self, tmp_path):
+        yaml_file = tmp_path / "repos.yaml"
+        yaml_file.write_text("other_key:\n  - value\n")
+        assert load_repos_from_yaml(yaml_file) == []
+
+    def test_empty_target_repos_returns_empty(self, tmp_path):
+        yaml_file = tmp_path / "repos.yaml"
+        yaml_file.write_text("target_repos: {}\n")
+        assert load_repos_from_yaml(yaml_file) == []
+
+    def test_single_category(self, tmp_path):
+        yaml_file = tmp_path / "repos.yaml"
+        yaml_file.write_text("target_repos:\n  all:\n    - owner/repo\n")
+        assert load_repos_from_yaml(yaml_file) == ["owner/repo"]
+
+
+class TestExtractAll:
+    def test_raises_when_token_missing(self, monkeypatch):
+        monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+        with pytest.raises(OSError, match="GITHUB_TOKEN"):
+            extract_all(["qdrant/qdrant"])
+
+    def test_creates_client_with_bearer_token(self, monkeypatch):
+        monkeypatch.setenv("GITHUB_TOKEN", "secret-token")
+        mock_client = MagicMock()
+        with (
+            patch("extractors.github_graphql.httpx.Client") as mock_cls,
+            patch("extractors.github_graphql.fetch_repo", return_value={}),
+            patch("extractors.github_graphql.save_repo"),
+        ):
+            mock_cls.return_value.__enter__.return_value = mock_client
+            extract_all(["qdrant/qdrant"])
+        assert mock_cls.call_args.kwargs["headers"]["Authorization"] == "Bearer secret-token"
+
+    def test_calls_fetch_and_save_for_each_repo(self, monkeypatch):
+        monkeypatch.setenv("GITHUB_TOKEN", "tok")
+        mock_client = MagicMock()
+        with (
+            patch("extractors.github_graphql.httpx.Client") as mock_cls,
+            patch("extractors.github_graphql.fetch_repo", return_value={"data": {}}) as mock_fetch,
+            patch("extractors.github_graphql.save_repo") as mock_save,
+        ):
+            mock_cls.return_value.__enter__.return_value = mock_client
+            extract_all(["qdrant/qdrant", "langchain-ai/langchain"])
+        assert mock_fetch.call_count == 2
+        assert mock_save.call_count == 2
+
+    def test_passes_owner_and_name_to_fetch(self, monkeypatch):
+        monkeypatch.setenv("GITHUB_TOKEN", "tok")
+        mock_client = MagicMock()
+        with (
+            patch("extractors.github_graphql.httpx.Client") as mock_cls,
+            patch("extractors.github_graphql.fetch_repo", return_value={}) as mock_fetch,
+            patch("extractors.github_graphql.save_repo"),
+        ):
+            mock_cls.return_value.__enter__.return_value = mock_client
+            extract_all(["langchain-ai/langchain"])
+        args = mock_fetch.call_args[0]
+        assert args[1] == "langchain-ai"
+        assert args[2] == "langchain"
+
+    def test_continues_after_exception(self, monkeypatch):
+        monkeypatch.setenv("GITHUB_TOKEN", "tok")
+        mock_client = MagicMock()
+        with (
+            patch("extractors.github_graphql.httpx.Client") as mock_cls,
+            patch("extractors.github_graphql.fetch_repo", side_effect=RuntimeError("boom")),
+            patch("extractors.github_graphql.save_repo") as mock_save,
+        ):
+            mock_cls.return_value.__enter__.return_value = mock_client
+            extract_all(["bad/repo", "another/bad"])  # must not raise
+        mock_save.assert_not_called()

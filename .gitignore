@@ -27,6 +27,7 @@ env/
 # pytest
 .pytest_cache/
 .coverage
+coverage.xml
 htmlcov/
 *.pytest_tmp/
 

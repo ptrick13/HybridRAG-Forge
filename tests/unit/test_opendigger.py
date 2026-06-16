@@ -1,13 +1,16 @@
 import json
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import httpx
+import pytest
 
 from extractors.opendigger import (
     BASE_URL,
     METRICS,
     build_metric_url,
+    extract_all,
     fetch_metric,
+    load_repos_from_yaml,
     save_metric,
 )
 
@@ -93,3 +96,90 @@ class TestSaveMetric:
         nested = tmp_path / "deep" / "nested"
         save_metric("x", "y", "forks", {}, bronze_dir=nested)
         assert nested.exists()
+
+
+class TestLoadReposFromYaml:
+    def test_returns_flattened_list(self, tmp_path):
+        yaml_file = tmp_path / "repos.yaml"
+        yaml_file.write_text(
+            "target_repos:\n"
+            "  vector_dbs:\n"
+            "    - qdrant/qdrant\n"
+            "    - weaviate/weaviate\n"
+            "  llm_frameworks:\n"
+            "    - langchain-ai/langchain\n"
+        )
+        result = load_repos_from_yaml(yaml_file)
+        assert result == ["qdrant/qdrant", "weaviate/weaviate", "langchain-ai/langchain"]
+
+    def test_missing_target_repos_key_returns_empty(self, tmp_path):
+        yaml_file = tmp_path / "repos.yaml"
+        yaml_file.write_text("other_key:\n  - value\n")
+        assert load_repos_from_yaml(yaml_file) == []
+
+    def test_empty_target_repos_returns_empty(self, tmp_path):
+        yaml_file = tmp_path / "repos.yaml"
+        yaml_file.write_text("target_repos: {}\n")
+        assert load_repos_from_yaml(yaml_file) == []
+
+    def test_single_category(self, tmp_path):
+        yaml_file = tmp_path / "repos.yaml"
+        yaml_file.write_text("target_repos:\n  all:\n    - owner/repo\n")
+        assert load_repos_from_yaml(yaml_file) == ["owner/repo"]
+
+
+class TestExtractAll:
+    def test_calls_fetch_metric_for_each_metric(self):
+        mock_client = MagicMock()
+        with (
+            patch("extractors.opendigger.httpx.Client") as mock_cls,
+            patch("extractors.opendigger.fetch_metric", return_value={"2024-01": 1.0}) as mock_fetch,
+            patch("extractors.opendigger.save_metric"),
+        ):
+            mock_cls.return_value.__enter__.return_value = mock_client
+            extract_all(["qdrant/qdrant"])
+        assert mock_fetch.call_count == len(METRICS)
+
+    def test_skips_save_when_fetch_returns_none(self):
+        mock_client = MagicMock()
+        with (
+            patch("extractors.opendigger.httpx.Client") as mock_cls,
+            patch("extractors.opendigger.fetch_metric", return_value=None),
+            patch("extractors.opendigger.save_metric") as mock_save,
+        ):
+            mock_cls.return_value.__enter__.return_value = mock_client
+            extract_all(["qdrant/qdrant"])
+        mock_save.assert_not_called()
+
+    def test_saves_when_fetch_returns_data(self):
+        mock_client = MagicMock()
+        with (
+            patch("extractors.opendigger.httpx.Client") as mock_cls,
+            patch("extractors.opendigger.fetch_metric", return_value={"2024-01": 5.0}),
+            patch("extractors.opendigger.save_metric") as mock_save,
+        ):
+            mock_cls.return_value.__enter__.return_value = mock_client
+            extract_all(["qdrant/qdrant"])
+        assert mock_save.call_count == len(METRICS)
+
+    def test_processes_multiple_repos(self):
+        mock_client = MagicMock()
+        with (
+            patch("extractors.opendigger.httpx.Client") as mock_cls,
+            patch("extractors.opendigger.fetch_metric", return_value={"2024-01": 1.0}) as mock_fetch,
+            patch("extractors.opendigger.save_metric"),
+        ):
+            mock_cls.return_value.__enter__.return_value = mock_client
+            extract_all(["qdrant/qdrant", "langchain-ai/langchain"])
+        assert mock_fetch.call_count == 2 * len(METRICS)
+
+    def test_continues_after_exception(self):
+        mock_client = MagicMock()
+        with (
+            patch("extractors.opendigger.httpx.Client") as mock_cls,
+            patch("extractors.opendigger.fetch_metric", side_effect=RuntimeError("boom")),
+            patch("extractors.opendigger.save_metric") as mock_save,
+        ):
+            mock_cls.return_value.__enter__.return_value = mock_client
+            extract_all(["qdrant/qdrant"])  # must not raise
+        mock_save.assert_not_called()
