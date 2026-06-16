@@ -2,7 +2,6 @@ import json
 from unittest.mock import MagicMock, patch
 
 import httpx
-import pytest
 
 from extractors.opendigger import (
     BASE_URL,
@@ -133,7 +132,9 @@ class TestExtractAll:
         mock_client = MagicMock()
         with (
             patch("extractors.opendigger.httpx.Client") as mock_cls,
-            patch("extractors.opendigger.fetch_metric", return_value={"2024-01": 1.0}) as mock_fetch,
+            patch(
+                "extractors.opendigger.fetch_metric", return_value={"2024-01": 1.0}
+            ) as mock_fetch,
             patch("extractors.opendigger.save_metric"),
         ):
             mock_cls.return_value.__enter__.return_value = mock_client
@@ -166,7 +167,9 @@ class TestExtractAll:
         mock_client = MagicMock()
         with (
             patch("extractors.opendigger.httpx.Client") as mock_cls,
-            patch("extractors.opendigger.fetch_metric", return_value={"2024-01": 1.0}) as mock_fetch,
+            patch(
+                "extractors.opendigger.fetch_metric", return_value={"2024-01": 1.0}
+            ) as mock_fetch,
             patch("extractors.opendigger.save_metric"),
         ):
             mock_cls.return_value.__enter__.return_value = mock_client
