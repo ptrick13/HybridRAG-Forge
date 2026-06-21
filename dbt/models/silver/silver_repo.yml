@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: silver_repo
+    description: "One normalized row per repo, deduped to the latest Bronze fetch."
+    columns:
+      - name: repo_id
+        description: "Surrogate key: '{repo_owner}/{repo_name}'."
+        tests:
+          - not_null
+          - unique
+      - name: repo_owner
+        tests:
+          - not_null
+      - name: repo_name
+        tests:
+          - not_null
+      - name: name
+        tests:
+          - not_null

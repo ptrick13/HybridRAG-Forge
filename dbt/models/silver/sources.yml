@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+  - name: silver
+    description: >
+      Silver layer. silver.repo_dependency is populated directly by
+      loaders/postgres/load_silver.py rather than by a dbt model, because
+      dbt-postgres has no Python model support and TOML/setup.py parsing
+      cannot be expressed in SQL. It is declared as a source here so dbt's
+      generic tests still apply to it.
+    database: "{{ env_var('POSTGRES_DB', 'hybridrag_forge') }}"
+    schema: silver
+    loaded_at_field: loaded_at
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 48, period: hour}
+
+    tables:
+      - name: repo_dependency
+        description: "Parsed, normalized package names per repo and manifest type."
+        columns:
+          - name: repo_owner
+            tests:
+              - not_null
+          - name: repo_name
+            tests:
+              - not_null
+          - name: source_manifest
+            description: "Which manifest file the dependency was parsed from."
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ["pyproject_toml", "requirements_txt", "setup_py"]
+          - name: package_name
+            tests:
+              - not_null
