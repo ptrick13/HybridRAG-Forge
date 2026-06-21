@@ -11,12 +11,13 @@ lint:
 	ruff format --check .
 
 typecheck:
-	mypy extractors/ loaders/postgres/ --ignore-missing-imports
+	mypy extractors/ loaders/postgres/ transformers/ --ignore-missing-imports
 
 test:
 	pytest tests/
 
 dbt-run:
+	python -m loaders.postgres.load_silver
 	cd dbt && dbt run
 
 dbt-test:

@@ -145,6 +145,9 @@ pytest -v
 | `tests/unit/test_github_graphql.py` | `build_request_payload()`, `_make_request()`, `fetch_repo()`, `save_repo()` — GraphQL query field validation, rate limit handling, JSON persistence |
 | `tests/unit/test_opendigger.py` | `build_metric_url()`, `fetch_metric()`, `save_metric()` — URL construction, 404 handling, request errors, file naming |
 | `tests/integration/test_bronze_load.py` | `load_github_repos()`, `load_opendigger_metrics()` — upsert correctness, idempotency, conflict resolution |
+| `tests/unit/test_dependency_parser.py` | `normalize_package_name()`, `parse_requirements_txt()`, `parse_pyproject_toml()`, `parse_setup_py()` — manifest parsing edge cases |
+| `tests/unit/test_load_silver.py` | `load_repo_dependencies()` — connection lifecycle, per-repo error handling, dependency counting (mocked) |
+| `tests/integration/test_silver_load.py` | `load_repo_dependencies()` — insert correctness, idempotency, stale dependency removal on reload |
 
 ---
 
@@ -154,7 +157,7 @@ pytest -v
 |---|---|---|
 | **1 – Scaffold** | Repo structure, Docker Compose, dbt skeleton, CI | ✅ done |
 | **2 – Bronze extractors** | GitHub GraphQL API + OpenDigger fetcher, raw data into Postgres Bronze | ✅ done |
-| **3 – Silver/dbt** | dbt models: cleaning, normalization, dependency parsing, bot filter | 🔜 |
+| **3 – Silver/dbt** | `silver_repo` (dbt: language/topic normalization, dedupe) + `silver_repo_dependency` (Python: manifest parsing, since dbt-postgres has no Python models). Bot filter deferred to Phase 6 (needs contributor data) | ✅ done |
 | **4 – AI enrichment** | LLM-based repo summaries (one-time run), embedding generation | 🔜 |
 | **5 – Gold/Star Schema + KG** | dbt Gold models: Star Schema (Postgres), KG export (Neo4j), doc chunks (Qdrant) | 🔜 |
 | **6 – Loaders** | Postgres, Neo4j, and Qdrant loaders | 🔜 |
